@@ -51,7 +51,7 @@ public class RegistrationController {
         if (existing != null) {
             // theSystemUser.setUserName(null);
             theModel.addAttribute("systemUser", theSystemUser);
-            theModel.addAttribute("registrationError", "User name already exists");
+            theModel.addAttribute("registrationError", "User with current username already exists");
             logger.debug("User name already exists.");
             return "registration-form";
         }

@@ -1,10 +1,10 @@
 package com.geekbrains.geekspring.services;
 
+import com.geekbrains.geekspring.entities.Role;
+import com.geekbrains.geekspring.entities.SystemUser;
+import com.geekbrains.geekspring.entities.User;
 import com.geekbrains.geekspring.repositories.RoleRepository;
 import com.geekbrains.geekspring.repositories.UserRepository;
-import com.geekbrains.geekspring.entities.SystemUser;
-import com.geekbrains.geekspring.entities.Role;
-import com.geekbrains.geekspring.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,79 +16,68 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
-	private UserRepository userRepository;
-	private RoleRepository roleRepository;
-	private BCryptPasswordEncoder passwordEncoder;
+    private UserRepository userRepository;
+    private RoleRepository roleRepository;
+    private BCryptPasswordEncoder passwordEncoder;
 
-	@Autowired
-	public void setUserRepository(UserRepository userRepository) {
-		this.userRepository = userRepository;
-	}
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
-	@Autowired
-	public void setRoleRepository(RoleRepository roleRepository) {
-		this.roleRepository = roleRepository;
-	}
+    @Autowired
+    public void setRoleRepository(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
 
-	@Autowired
-	public void setPasswordEncoder(BCryptPasswordEncoder passwordEncoder) {
-		this.passwordEncoder = passwordEncoder;
-	}
+    @Autowired
+    public void setPasswordEncoder(BCryptPasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
-	@Override
-	@Transactional
-	public User findByUserName(String userName) {
-		return userRepository.findOneByUserName(userName);
-	}
+    @Override
+    @Transactional
+    public User findByUserName(String username) {
+        return userRepository.findOneByUserName(username);
+    }
 
-	@Override
-	@Transactional
-	public void save(SystemUser systemUser) {
-		User user = new User();
-		user.setUserName(systemUser.getUserName());
-		user.setPassword(passwordEncoder.encode(systemUser.getPassword()));
-		user.setFirstName(systemUser.getFirstName());
-		user.setLastName(systemUser.getLastName());
-		user.setEmail(systemUser.getEmail());
+    @Override
+    @Transactional
+    public boolean save(SystemUser systemUser) {
+        User user = new User();
 
-		user.setRoles(Arrays.asList(roleRepository.findOneByName("ROLE_EMPLOYEE")));
+        if (findByUserName(systemUser.getUserName()) != null) {
+            return false;
+        }
 
-		userRepository.save(user);
-	}
+        user.setUserName(systemUser.getUserName());
+        user.setPassword(passwordEncoder.encode(systemUser.getPassword()));
+        user.setFirstName(systemUser.getFirstName());
+        user.setLastName(systemUser.getLastName());
+        user.setEmail(systemUser.getEmail());
 
-	@Override
-	public List<User> findAll() {
-		return (List<User>) userRepository.findAll();
-	}
+        user.setRoles(Arrays.asList(roleRepository.findOneByName("ROLE_EMPLOYEE")));
 
-	@Override
-	public void update(User userModified) {
-		userModified.setPassword(passwordEncoder.encode(userModified.getPassword()));
-		userRepository.save(userModified);
-	}
+        userRepository.save(user);
+        return true;
+    }
 
-	public Optional<User> findById(Long userId) {
-		return userRepository.findById(userId);
-	}
+    @Override
+    @Transactional
+    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        User user = userRepository.findOneByUserName(userName);
+        if (user == null) {
+            throw new UsernameNotFoundException("Invalid username or password.");
+        }
+        return new org.springframework.security.core.userdetails.User(user.getUserName(), user.getPassword(),
+                mapRolesToAuthorities(user.getRoles()));
+    }
 
-	@Override
-	@Transactional
-	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-		User user = userRepository.findOneByUserName(userName);
-		if (user == null) {
-			throw new UsernameNotFoundException("Invalid username or password.");
-		}
-		return new org.springframework.security.core.userdetails.User(user.getUserName(), user.getPassword(),
-				mapRolesToAuthorities(user.getRoles()));
-	}
-
-	private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
-		return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
-	}
+    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
+        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+    }
 }
