@@ -46,9 +46,31 @@
 <div th:replace="~{navigation :: navi(AdminDashboard)}" />
 
 <div class="container">
-    <h1>Admin Panel</h1>
-    <br>
-    <a th:href="@{/admin/edit-form}">Edit User</a>
+    <form th:action="@{/admin/update}" th:object="${user}" method="post">
+        <input type="hidden" th:field="*{id}">
+        <br>
+        User name: <input type="text" th:field="*{userName}"/>
+        <br>
+        <br>
+        Password: <input type="password" th:field="*{password}" />
+        <br>
+        <br>
+        First Name: <input type="text" th:field="*{firstName}"/>
+        <br>
+        <br>
+        Last Name: <input type="text" th:field="*{lastName}"/>
+        <br>
+        <br>
+        Email: <input type="text" th:field="*{email}"/>
+        <br>
+        <br>
+        <p><input type="checkbox" th:text="Employee" th:value="1"></p>
+        <p><input type="checkbox" th:text="Manager" th:value="2"></p>
+        <p><input type="checkbox" th:text="Admin" th:value="3"></p>
+        <div class="submit">
+            <button name="addStudent" type="submit">Save changes</button>
+        </div>
+    </form>
 </div>
 
 <!--===============================================================================================-->

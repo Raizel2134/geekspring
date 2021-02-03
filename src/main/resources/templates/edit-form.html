@@ -46,9 +46,13 @@
 <div th:replace="~{navigation :: navi(AdminDashboard)}" />
 
 <div class="container">
-    <h1>Admin Panel</h1>
-    <br>
-    <a th:href="@{/admin/edit-form}">Edit User</a>
+    <tr class="myTableRow responsive-row" th:each="user : ${users}" th:attr="entryIndex=${user.id}">
+        <td th:text="${user.id}"/>
+        <td th:text="${user.userName}"/>
+        <td>
+            <a th:href="@{'/admin/edit/' + ${user.id}}">Edit</a>
+        </td>
+    </tr>
 </div>
 
 <!--===============================================================================================-->
