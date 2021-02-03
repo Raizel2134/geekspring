@@ -1,30 +1,75 @@
 package com.geekbrains.geekspring.entities;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
 @Table(name = "products")
 @Data
-@NoArgsConstructor
-public class Product {
+public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @NotNull(message = "Title not null")
-    @Size(min = 6, message = "Title legth min 5 sym")
+    @ManyToOne
+    @NotNull(message = "категория не выбрана")
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @Column(name = "vendor_code")
+    @NotNull(message = "не может быть пустым")
+    @Pattern(regexp = "([0-9]{1,})", message = "недопустимый символ")
+    @Size(min = 8, max = 8, message = "требуется 8 числовых символов")
+    private String vendorCode;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, mappedBy = "product")
+    private List<ProductImage> images;
+
     @Column(name = "title")
+    @NotNull(message = "не может быть пустым")
+    @Size(min = 5, max = 250, message = "требуется минимум 5 символов")
     private String title;
 
-    @NotNull(message = "price not null")
-    @Min(value = 1, message = "Min 1")
+    @Column(name = "short_description")
+    private String shortDescription;
+
+    @Column(name = "full_description")
+    private String fullDescription;
+
     @Column(name = "price")
+    @NotNull(message = "не может быть пустым")
+    @DecimalMin(value = "0.01", message = "минимальное значение 0")
+    @Digits(integer = 10, fraction = 2)
     private double price;
+
+    @Column(name = "create_at")
+    @CreationTimestamp
+    private LocalDateTime createAt;
+
+    @Column(name = "update_at")
+    @UpdateTimestamp
+    private LocalDateTime updateAt;
+
+    public void addImage(ProductImage productImage) {
+        if (images == null) {
+            images = new ArrayList<>();
+        }
+        images.add(productImage);
+    }
+
+    @Override
+    public String toString() {
+        return "Product title = '" + title + "'";
+    }
 }
