@@ -3,6 +3,7 @@ package com.geekbrains.geekspring.controllers;
 import com.geekbrains.geekspring.entities.Product;
 import com.geekbrains.geekspring.repositories.specifications.ProductSpecs;
 import com.geekbrains.geekspring.services.ProductsService;
+import com.geekbrains.geekspring.utils.ProductFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -30,39 +32,22 @@ public class ShopController {
 
     @GetMapping
     public String shopPage(Model model,
-                           @RequestParam(value = "page") Optional<Integer> page,
-                           @RequestParam(value = "word", required = false) String word,
-                           @RequestParam(value = "min", required = false) Double min,
-                           @RequestParam(value = "max", required = false) Double max
+                           @RequestParam Map<String, String> requestParams,
+                           @RequestParam(value = "page") Optional<Integer> page
     ) {
         final int currentPage = (page.orElse(0) < 1) ? INITIAL_PAGE : page.get() - 1;
 
-        Specification<Product> spec = Specification.where(null);
-        StringBuilder filters = new StringBuilder();
-        if (word != null) {
-            spec = spec.and(ProductSpecs.titleContains(word));
-            filters.append("&word=" + word);
-        }
-        if (min != null) {
-            spec = spec.and(ProductSpecs.priceGreaterThanOrEq(min));
-            filters.append("&min=" + min);
-        }
-        if (max != null) {
-            spec = spec.and(ProductSpecs.priceLesserThanOrEq(max));
-            filters.append("&max=" + max);
-        }
+        ProductFilter productFilter = new ProductFilter(requestParams);
 
-        Page<Product> products = productsService.getProductsWithPagingAndFiltering(currentPage, PAGE_SIZE, spec);
+        Page<Product> products = productsService.getProductsWithPagingAndFiltering(currentPage, PAGE_SIZE, productFilter.getSpec());
 
         model.addAttribute("products", products.getContent());
         model.addAttribute("page", currentPage);
         model.addAttribute("totalPage", products.getTotalPages());
 
-        model.addAttribute("filters", filters.toString());
+        System.out.println(productFilter.toString());
 
-        model.addAttribute("min", min);
-        model.addAttribute("max", max);
-        model.addAttribute("word", word);
+        model.addAttribute("filters", productFilter.toString());
         return "shop-page";
     }
 
