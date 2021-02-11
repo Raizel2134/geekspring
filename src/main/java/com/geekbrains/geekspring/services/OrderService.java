@@ -2,7 +2,6 @@ package com.geekbrains.geekspring.services;
 
 import com.geekbrains.geekspring.entities.Order;
 import com.geekbrains.geekspring.entities.OrderItem;
-import com.geekbrains.geekspring.entities.OrderStatus;
 import com.geekbrains.geekspring.entities.User;
 import com.geekbrains.geekspring.repositories.OrderRepository;
 import com.geekbrains.geekspring.utils.ShoppingCart;
@@ -17,9 +16,16 @@ import java.util.List;
 public class OrderService {
     private OrderRepository orderRepository;
 
+    private OrderStatusService orderStatusService;
+
     @Autowired
     public void setOrderRepository(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
+    }
+
+    @Autowired
+    public void setOrderStatusService(OrderStatusService orderStatusService) {
+        this.orderStatusService = orderStatusService;
     }
 
     @Transactional
@@ -27,10 +33,10 @@ public class OrderService {
         Order order = new Order();
         order.setId(0L);
         order.setUser(user);
-        order.setStatus(OrderStatus.CREATED);
+        order.setStatus(orderStatusService.getStatusById(1L));
         order.setPrice(cart.getTotalCost());
         order.setOrderItems(new ArrayList<>(cart.getItems()));
-        for (OrderItem o : order.getOrderItems()) {
+        for (OrderItem o : cart.getItems()) {
             o.setOrder(order);
         }
         return order;
@@ -45,11 +51,13 @@ public class OrderService {
     }
 
     public Order saveOrder(Order order) {
-        return orderRepository.save(order);
+        Order orderOut = orderRepository.save(order);
+        orderOut.setConfirmed(true);
+        return orderOut;
     }
 
-    public Order changeOrderStatus(Order order, OrderStatus newStatus) {
-        order.setStatus(newStatus);
+    public Order changeOrderStatus(Order order, Long statusId) {
+        order.setStatus(orderStatusService.getStatusById(statusId));
         return saveOrder(order);
     }
 }

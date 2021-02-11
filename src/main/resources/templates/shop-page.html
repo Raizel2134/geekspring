@@ -36,8 +36,9 @@
     <h1 th:text="#{products.list}" />
 
     <table class="table table-hover">
-        <thead>
+        <thead class="thead-dark">
         <tr>
+            <th>id_custom</th>
             <th>ID</th>
             <th>Картинка</th>
             <th>Название товара</th>
@@ -46,15 +47,15 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="product : ${products}">
+
+        <tr th:each="product,iterStat : ${products}">
+
+            <td th:text="${iterStat.index}"/>
             <td th:text="${product.id}"/>
             <td>
                 <img th:if="${product.images.size() > 0}" width="40" height="40" th:src="@{'/images/' + ${product.images[0].path}}" />
             </td>
-            <td >
-                <a th:text="${product.title}" th:href="@{'/shop/product_info/' + ${product.id}}" />
-            </td>
-
+            <td th:text="${product.title}"/>
             <td th:text="${product.price}"/>
             <td>
                 <a th:href="@{'/shop/cart/add/' + ${product.id}}" class="btn btn-primary">Добавить в корзину</a>
@@ -72,6 +73,19 @@
             <!--<li class="page-item"><a class="page-link" href="#">Next</a></li>-->
         </ul>
     </nav>
+
+    <!--<table class="table table-hover">-->
+        <!--<thead class="thead-dark">-->
+        <!--<tr>-->
+            <!--<th>ID</th>-->
+        <!--</tr>-->
+        <!--</thead>-->
+        <!--<tbody>-->
+        <!--<tr th:each="i : ${#numbers.sequence(1, totalPage, 1)}">-->
+            <!--<th th:text="${i}"></th>-->
+        <!--</tr>-->
+        <!--</tbody>-->
+    <!--</table>-->
 </div>
 
 </body>

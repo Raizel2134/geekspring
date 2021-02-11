@@ -1,7 +1,5 @@
 package com.geekbrains.geekspring.entities;
 
-
-
 import com.geekbrains.geekspring.validation.FieldMatch;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,6 +33,7 @@ public class SystemUser {
     private String lastName;
 
     @NotNull(message = "is required")
+    @Size(min = 1, message = "is required")
     @Email
     private String email;
 }

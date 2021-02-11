@@ -53,7 +53,7 @@
         </table>
         <br>
 
-        <a sec:authorize="isAuthenticated()" type="button" class="btn btn-primary" th:href="@{/order/fill}">Продолжить оформление заказа</a>
+        <a sec:authorize="isAuthenticated()" type="button" class="btn btn-primary" th:href="@{/shop/order/fill}">Продолжить оформление заказа</a>
         <a sec:authorize="isAnonymous()" type="button" class="btn btn-primary" data-toggle="modal" data-target="#authWarningModal">Продолжить оформление заказа</a>
 
     </div>

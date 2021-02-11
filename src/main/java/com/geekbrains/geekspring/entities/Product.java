@@ -6,12 +6,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Entity
 @Table(name = "products")
@@ -33,7 +31,7 @@ public class Product implements Serializable {
     @Size(min = 8, max = 8, message = "требуется 8 числовых символов")
     private String vendorCode;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, mappedBy = "product")
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "product")
     private List<ProductImage> images;
 
     @Column(name = "title")

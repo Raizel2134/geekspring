@@ -19,8 +19,4 @@ public class DeliveryAddressService {
     public List<DeliveryAddress> getUserAddresses(Long userId) {
         return deliveryAddressRepository.findAllByUserId(userId);
     }
-
-    public DeliveryAddress getUserAddressById(Long id) {
-        return deliveryAddressRepository.findById(id).orElse(null);
-    }
 }
