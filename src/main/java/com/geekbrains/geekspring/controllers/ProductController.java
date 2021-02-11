@@ -1,11 +1,14 @@
 package com.geekbrains.geekspring.controllers;
 
+import com.geekbrains.geekspring.entities.Greeting;
 import com.geekbrains.geekspring.entities.Product;
 import com.geekbrains.geekspring.entities.ProductImage;
+import com.geekbrains.geekspring.interfaces.IShopControllerWs;
 import com.geekbrains.geekspring.services.CategoryService;
 import com.geekbrains.geekspring.services.ImageSaverService;
 import com.geekbrains.geekspring.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,6 +16,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Controller
@@ -21,6 +25,12 @@ public class ProductController {
     private ProductService productService;
     private CategoryService categoryService;
     private ImageSaverService imageSaverService;
+    private IShopControllerWs controllerWs;
+
+    @Autowired
+    public void setControllerWs(IShopControllerWs controllerWs) {
+        this.controllerWs = controllerWs;
+    }
 
     @Autowired
     public void setProductService(ProductService productService) {
@@ -49,10 +59,13 @@ public class ProductController {
         return "/edit-product";
     }
 
+    @SubscribeMapping()
     @PostMapping("/edit")
-    public String processProductAddForm(@Valid @ModelAttribute("product") Product product, BindingResult theBindingResult, Model model, @RequestParam("file") MultipartFile file) {
+    public String processProductAddForm(@Valid @ModelAttribute("product") Product product, BindingResult theBindingResult,
+                                        Model model, @RequestParam("file") MultipartFile file) {
+
         if (product.getId() == 0 && productService.isProductWithTitleExists(product.getTitle())) {
-            theBindingResult.addError(new ObjectError("product.title", "Товар с таким названием уже существует")); // todo не отображает сообщение
+            theBindingResult.addError(new ObjectError("product.title", "Товар с таким названием уже существует"));
         }
 
         if (theBindingResult.hasErrors()) {
@@ -67,8 +80,14 @@ public class ProductController {
             productImage.setProduct(product);
             product.addImage(productImage);
         }
-
-        productService.saveProduct(product);
+        new Thread(() -> {
+            try {
+                Thread.sleep(700);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            controllerWs.sendMessage("/topic/greetings", new Greeting(product.getTitle()));
+        }).start();
         return "redirect:/shop";
     }
 }

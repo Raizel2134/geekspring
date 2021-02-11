@@ -3,6 +3,7 @@ package com.geekbrains.geekspring.services;
 import com.geekbrains.geekspring.entities.Role;
 import com.geekbrains.geekspring.entities.SystemUser;
 import com.geekbrains.geekspring.entities.User;
+import com.geekbrains.geekspring.repositories.RoleGrpcRepository;
 import com.geekbrains.geekspring.repositories.RoleRepository;
 import com.geekbrains.geekspring.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ public class UserServiceImpl implements UserService {
     private RoleRepository roleRepository;
     private BCryptPasswordEncoder passwordEncoder;
 
+    private RoleGrpcRepository roleGrpcRepository;
+
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -32,6 +35,11 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public void setRoleRepository(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
+    }
+
+    @Autowired
+    public void setRepository(RoleGrpcRepository roleGrpcRepository) {
+        this.roleGrpcRepository = roleGrpcRepository;
     }
 
     @Autowired
@@ -60,7 +68,8 @@ public class UserServiceImpl implements UserService {
         user.setLastName(systemUser.getLastName());
         user.setEmail(systemUser.getEmail());
 
-        user.setRoles(Arrays.asList(roleRepository.findOneByName("ROLE_EMPLOYEE")));
+
+        user.setRoles(Arrays.asList(roleGrpcRepository.findOneByName("ROLE_EMPLOYEE")));
 
         userRepository.save(user);
         return true;
