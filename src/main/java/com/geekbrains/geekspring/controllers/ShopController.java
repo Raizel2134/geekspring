@@ -1,19 +1,21 @@
 package com.geekbrains.geekspring.controllers;
 
+import com.geekbrains.geekspring.entities.DeliveryAddress;
+import com.geekbrains.geekspring.entities.Order;
 import com.geekbrains.geekspring.entities.Product;
-import com.geekbrains.geekspring.repositories.specifications.ProductSpecs;
-import com.geekbrains.geekspring.services.ProductsService;
+import com.geekbrains.geekspring.entities.User;
+import com.geekbrains.geekspring.services.*;
 import com.geekbrains.geekspring.utils.ProductFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -23,11 +25,41 @@ public class ShopController {
     private static final int INITIAL_PAGE = 0;
     private static final int PAGE_SIZE = 5;
 
-    private ProductsService productsService;
+    private MailService mailService;
+    private UserService userService;
+    private OrderService orderService;
+    private ProductService productService;
+    private ShoppingCartService shoppingCartService;
+    private DeliveryAddressService deliverAddressService;
 
     @Autowired
-    public void setProductsService(ProductsService productsService) {
-        this.productsService = productsService;
+    public void setProductService(ProductService productService) {
+        this.productService = productService;
+    }
+
+    @Autowired
+    public void setShoppingCartService(ShoppingCartService shoppingCartService) {
+        this.shoppingCartService = shoppingCartService;
+    }
+
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    @Autowired
+    public void setOrderService(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
+    @Autowired
+    public void setDeliverAddressService(DeliveryAddressService deliverAddressService) {
+        this.deliverAddressService = deliverAddressService;
+    }
+
+    @Autowired
+    public void setMailService(MailService mailService) {
+        this.mailService = mailService;
     }
 
     @GetMapping
@@ -39,7 +71,7 @@ public class ShopController {
 
         ProductFilter productFilter = new ProductFilter(requestParams);
 
-        Page<Product> products = productsService.getProductsWithPagingAndFiltering(currentPage, PAGE_SIZE, productFilter.getSpec());
+        Page<Product> products = productService.getProductsWithPagingAndFiltering(currentPage, PAGE_SIZE, productFilter.getSpec());
 
         model.addAttribute("products", products.getContent());
         model.addAttribute("page", currentPage);
@@ -53,8 +85,44 @@ public class ShopController {
 
     @GetMapping("/product_info/{id}")
     public String productPage(Model model, @PathVariable(value = "id") Long id) {
-        Product product = productsService.findById(id);
+        Product product = productService.findById(id);
         model.addAttribute("product", product);
         return "product-page";
+    }
+
+    @GetMapping(value = "/cart/add/{id}")
+    public String addProductToCart(Model model, @PathVariable("id") Long id, HttpServletRequest httpServletRequest) {
+        shoppingCartService.addToCart(httpServletRequest.getSession(), id);
+        String referrer = httpServletRequest.getHeader("referer");
+        return "redirect:" + referrer;
+    }
+
+    @GetMapping("/order/fill")
+    public String orderFill(Model model, HttpServletRequest httpServletRequest, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        User user = userService.findByUserName(principal.getName());
+        Order order = orderService.makeOrder(shoppingCartService.getCurrentCart(httpServletRequest.getSession()), user);
+        List<DeliveryAddress> deliveryAddresses = deliverAddressService.getUserAddresses(user.getId());
+        model.addAttribute("order", order);
+        model.addAttribute("deliveryAddresses", deliveryAddresses);
+        return "order-filler";
+    }
+
+    @PostMapping("/order/confirm")
+    public String orderConfirm(Model model, HttpServletRequest httpServletRequest, @ModelAttribute(name = "order") Order orderFromFrontend, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        User user = userService.findByUserName(principal.getName());
+        Order order = orderService.makeOrder(shoppingCartService.getCurrentCart(httpServletRequest.getSession()), user);
+        order.setDeliveryAddress(orderFromFrontend.getDeliveryAddress());
+        order.setPhoneNumber(orderFromFrontend.getPhoneNumber());
+        order.setDeliveryDate(LocalDateTime.now().plusDays(7));
+        order.setDeliveryPrice(0.0);
+        order = orderService.saveOrder(order);
+        model.addAttribute("order", order);
+        return "order-filler";
     }
 }

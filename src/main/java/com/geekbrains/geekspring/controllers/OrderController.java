@@ -1,5 +1,6 @@
 package com.geekbrains.geekspring.controllers;
 
+import com.geekbrains.geekspring.entities.DeliveryAddress;
 import com.geekbrains.geekspring.entities.Order;
 import com.geekbrains.geekspring.entities.User;
 import com.geekbrains.geekspring.services.DeliveryAddressService;
@@ -63,7 +64,7 @@ public class OrderController {
         }
         User user = userService.findByUserName(principal.getName());
         Order order = orderService.makeOrder(shoppingCart, user);
-        order.setDeliveryAddress(deliverAddressService.getUserAddressById(deliveryAddressId));
+        order.setDeliveryAddress((DeliveryAddress) deliverAddressService.getUserAddresses(deliveryAddressId));
         order.setPhoneNumber(phoneNumber);
         order.setDeliveryDate(LocalDateTime.now().plusDays(7));
         order.setDeliveryPrice(0.0);

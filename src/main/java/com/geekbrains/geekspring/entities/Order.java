@@ -1,5 +1,6 @@
 package com.geekbrains.geekspring.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -18,13 +19,14 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+//    @JsonBackReference
     private User user;
 
     @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "order", fetch = FetchType.EAGER)
     private List<OrderItem> orderItems;
 
-    @Column(name = "status")
-    @Enumerated
+    @ManyToOne
+    @JoinColumn(name = "status_id")
     private OrderStatus status;
 
     @Column(name = "price")
@@ -50,4 +52,8 @@ public class Order {
     @Column(name = "update_at")
     @CreationTimestamp
     private LocalDateTime updateAt;
+
+    @JsonIgnore
+    @Transient
+    private boolean confirmed;
 }
