@@ -14,7 +14,7 @@ function connect() {
 }
 
 function sendName() {
-    var name = 'товар';
+    var name = '';
     stompClient.send("/app/hello", {}, JSON.stringify({ 'name': name }));
 }
 
