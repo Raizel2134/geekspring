@@ -91,10 +91,9 @@ public class ShopController {
     }
 
     @GetMapping(value = "/cart/add/{id}")
-    public String addProductToCart(Model model, @PathVariable("id") Long id, HttpServletRequest httpServletRequest) {
+    public String addProductToCart(@PathVariable("id") Long id, HttpServletRequest httpServletRequest) {
         shoppingCartService.addToCart(httpServletRequest.getSession(), id);
         String referrer = httpServletRequest.getHeader("referer");
-
         return "redirect:" + referrer;
     }
 
