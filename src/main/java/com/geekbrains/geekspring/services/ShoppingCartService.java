@@ -2,14 +2,28 @@ package com.geekbrains.geekspring.services;
 
 import com.geekbrains.geekspring.entities.Product;
 import com.geekbrains.geekspring.utils.ShoppingCart;
+import com.geekbrains.geekspring.utils.consumer.ReceiverApp;
+import com.geekbrains.geekspring.utils.producer.SenderApp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 @Service
 public class ShoppingCartService {
     private ProductService productService;
+    private SenderApp senderApp;
+    private ReceiverApp receiverApp;
+
+    @Autowired
+    public void setReceiverApp(ReceiverApp receiverApp){ this.receiverApp = receiverApp; }
+
+    @Autowired
+    public void setSenderApp(SenderApp senderApp) {
+        this.senderApp = senderApp;
+    }
 
     @Autowired
     public void setProductService(ProductService productService) {
@@ -29,8 +43,9 @@ public class ShoppingCartService {
         session.removeAttribute("cart");
     }
 
-    public void addToCart(HttpSession session, Long productId) {
+    public void addToCart(HttpSession session, Long productId) throws IOException, TimeoutException {
         Product product = productService.getProductById(productId);
+        senderApp.senderMessage(product.getTitle());
         addToCart(session, product);
     }
 

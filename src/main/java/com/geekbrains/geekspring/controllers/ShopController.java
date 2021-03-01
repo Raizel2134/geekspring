@@ -6,6 +6,7 @@ import com.geekbrains.geekspring.entities.Product;
 import com.geekbrains.geekspring.entities.User;
 import com.geekbrains.geekspring.services.*;
 import com.geekbrains.geekspring.utils.ProductFilter;
+import com.geekbrains.geekspring.utils.consumer.ReceiverApp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -13,11 +14,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeoutException;
 
 @Controller
 @RequestMapping("/shop")
@@ -31,6 +34,10 @@ public class ShopController {
     private ProductService productService;
     private ShoppingCartService shoppingCartService;
     private DeliveryAddressService deliverAddressService;
+    private ReceiverApp receiverApp;
+
+    @Autowired
+    public void setReceiverApp(ReceiverApp receiverApp){ this.receiverApp = receiverApp; }
 
     @Autowired
     public void setProductService(ProductService productService) {
@@ -91,14 +98,16 @@ public class ShopController {
     }
 
     @GetMapping(value = "/cart/add/{id}")
-    public String addProductToCart(@PathVariable("id") Long id, HttpServletRequest httpServletRequest) {
+    public String addProductToCart(@PathVariable("id") Long id, HttpServletRequest httpServletRequest)
+            throws IOException, TimeoutException {
         shoppingCartService.addToCart(httpServletRequest.getSession(), id);
         String referrer = httpServletRequest.getHeader("referer");
         return "redirect:" + referrer;
     }
 
     @GetMapping("/order/fill")
-    public String orderFill(Model model, HttpServletRequest httpServletRequest, Principal principal) {
+    public String orderFill(Model model, HttpServletRequest httpServletRequest, Principal principal)
+            throws IOException, TimeoutException {
         if (principal == null) {
             return "redirect:/login";
         }
@@ -107,6 +116,7 @@ public class ShopController {
         List<DeliveryAddress> deliveryAddresses = deliverAddressService.getUserAddresses(user.getId());
         model.addAttribute("order", order);
         model.addAttribute("deliveryAddresses", deliveryAddresses);
+        receiverApp.receivingMessage();
         return "order-filler";
     }
 
