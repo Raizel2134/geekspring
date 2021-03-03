@@ -1,7 +1,6 @@
 package com.geekbrains.geekspring.utils.consumer;
 
 import com.rabbitmq.client.*;
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -28,6 +27,7 @@ public class ReceiverApp {
             }
         };
 
-        channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {});
+        channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
+        });
     }
 }

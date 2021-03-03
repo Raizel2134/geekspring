@@ -67,8 +67,6 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(systemUser.getFirstName());
         user.setLastName(systemUser.getLastName());
         user.setEmail(systemUser.getEmail());
-
-
         user.setRoles(Arrays.asList(roleGrpcRepository.findOneByName("ROLE_EMPLOYEE")));
 
         userRepository.save(user);
