@@ -16,9 +16,13 @@ public class ShoppingCartService {
     private ProductService productService;
     private SenderApp senderApp;
     private ReceiverApp receiverApp;
+    private ShoppingCart shoppingCart;
 
     @Autowired
     public void setReceiverApp(ReceiverApp receiverApp){ this.receiverApp = receiverApp; }
+
+    @Autowired
+    public void setShoppingCart(ShoppingCart shoppingCart){ this.shoppingCart = shoppingCart; }
 
     @Autowired
     public void setSenderApp(SenderApp senderApp) {
@@ -49,6 +53,10 @@ public class ShoppingCartService {
         addToCart(session, product);
     }
 
+    public void addToCartNoSession(Long productId){
+        shoppingCart.add(productService.getProductById(productId));//Кидает NullPointerException
+    }
+
     public void addToCart(HttpSession session, Product product) {
         ShoppingCart cart = getCurrentCart(session);
         cart.add(product);
@@ -57,6 +65,10 @@ public class ShoppingCartService {
     public void removeFromCart(HttpSession session, Long productId) {
         Product product = productService.getProductById(productId);
         removeFromCart(session, product);
+    }
+
+    public void removeCartNoSession(Long productId){
+        shoppingCart.remove(productService.getProductById(productId));//Кидает NullPointerException
     }
 
     public void removeFromCart(HttpSession session, Product product) {

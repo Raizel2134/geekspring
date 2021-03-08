@@ -64,7 +64,7 @@ public class ShoppingCart {
         recalculate();
     }
 
-    public void recalculate() {
+    private void recalculate() {
         totalCost = 0.0;
         for (OrderItem o : items) {
             o.setTotalPrice(o.getQuantity() * o.getProduct().getPrice());
