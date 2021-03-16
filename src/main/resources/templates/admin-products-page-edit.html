@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- Mobile Web-app fullscreen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Meta tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../../static/favicon.ico">
+
+    <!--Title-->
+    <title>Панель администратора</title>
+
+    <!--CSS styles-->
+    <link rel="stylesheet" media="all" href="../../../css/bootstrap.css"/>
+    <link rel="stylesheet" media="all" href="../../../css/animate.css"/>
+    <link rel="stylesheet" media="all" href="../../../css/font-awesome.css"/>
+    <link rel="stylesheet" media="all" href="../../../css/furniture-icons.css"/>
+    <link rel="stylesheet" media="all" href="../../../css/linear-icons.css"/>
+    <link rel="stylesheet" media="all" href="../../../css/magnific-popup.css"/>
+    <link rel="stylesheet" media="all" href="../../../css/owl.carousel.css"/>
+    <link rel="stylesheet" media="all" href="../../../css/ion-range-slider.css"/>
+    <link rel="stylesheet" media="all" href="../../../css/theme.css"/>
+
+    <!--Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600&amp;subset=latin-ext" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<div class="page-loader"></div>
+
+<div class="wrapper">
+
+    <!-- ======================== Navigation ======================== -->
+
+    <div th:replace="~{navigation :: navigation(activeTab)}"/>
+
+    <!-- ========================  Main header ======================== -->
+
+    <section class="main-header" style="background-image:url(../static/assets/images/gallery-2.jpg)">
+        <header>
+            <div class="container text-center">
+                <h2 class="h2 title">Добавление товара</h2>
+                <ol class="breadcrumb breadcrumb-inverted">
+                    <li><a href="/index"><span class="icon icon-home"></span></a></li>
+                    <li><a href="/admin">Панель администратора</a></li>
+                    <li><a href="/admin/product">Таблица товаров</a></li>
+                    <li><a class="active">Добавление товара</a></li>
+                </ol>
+            </div>
+        </header>
+    </section>
+
+
+    <section class="login-wrapper login-wrapper-page">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="login-wrapper">
+                        <div class="white-block">
+                            <header class="card-header">
+                                <h4 class="card-title mt-2"><span
+                                        th:text="${product.title == null} ? 'Добавление товара' : 'Изменение товара'"></span>
+                                </h4>
+                            </header>
+                            <article class="card-body">
+                                <form th:action="@{/admin/product/saveEdit}" th:object="${product}" method="post"
+                                      enctype="multipart/form-data">
+                                    <input th:field="*{id}" type="hidden" class="form-control">
+
+                                    <div class="form-row">
+                                        <div class="col form-group">
+                                            <label>Наименование</label>
+                                            <input th:field="*{title}" type="text" class="form-control" placeholder="">
+                                            <small class="error" th:if="${#fields.hasErrors('title')}"
+                                                   th:errors="*{title}"> </small>
+                                        </div>
+                                        <div class="col form-group">
+                                            <label>Цена</label>
+                                            <input th:field="*{price}" type="number" class="form-control"
+                                                   placeholder="">
+                                            <small class="error" th:if="${#fields.hasErrors('price')}"
+                                                   th:errors="*{price}"> </small>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="input-group">
+                                            <div>
+                                                <label>Выберите категорию</label>
+                                                <select th:field="*{category.id}" class="form-control">
+                                                    <option th:each="category: ${categories}"
+                                                            th:value="${category.id}"
+                                                            th:text="${category.title}">
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col form-group">
+                                            <label>Артикул</label>
+                                            <input th:field="*{vendorCode}" type="text" class="form-control"
+                                                   placeholder="">
+                                            <small class="error" th:if="${#fields.hasErrors('vendorCode')}"
+                                                   th:errors="*{vendorCode}"></small>
+                                        </div>
+                                        <div class="col form-group">
+                                            <label>Дата создания</label>
+                                            <input th:field="*{createAt}" type="text" class="form-control"
+                                                   placeholder="">
+                                            <small class="error" th:if="${#fields.hasErrors('createAt')}"
+                                                   th:errors="*{createAt}"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="col form-group">
+                                            <label>Краткое описание</label>
+                                            <input th:field="*{shortDescription}" type="text" class="form-control"
+                                                   th:rows="3" placeholder="">
+                                            <small class="error" th:if="${#fields.hasErrors('shortDescription')}"
+                                                   th:errors="*{shortDescription}"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="col form-group">
+                                            <label>Подробное описание</label>
+                                            <input th:field="*{fullDescription}" type="text" class="form-control"
+                                                   th:rows="5" placeholder="">
+                                            <small class="error" th:if="${#fields.hasErrors('fullDescription')}"
+                                                   th:errors="*{fullDescription}"></small>
+                                            <input th:field="*{id}" type="number" class="invisible" placeholder="">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button type="submit" name="addProduct" class="btn btn-primary btn-block">
+                                            Сохранить
+                                        </button>
+                                    </div>
+                                </form>
+                            </article>
+                        </div>
+                    </div> <!--/login-wrapper-->
+                </div> <!--/col-md-6-->
+            </div>
+        </div>
+    </section>
+    <!-- ================== Footer  ================== -->
+    <div th:replace="~{footer :: footer(activeTab)}"/>
+</div> <!--/wrapper-->
+
+<!--JS files-->
+<script src="../../../js/jquery.min.js"></script>
+<script src="../../../js/jquery.bootstrap.js"></script>
+<script src="../../../js/jquery.magnific-popup.js"></script>
+<script src="../../../js/jquery.owl.carousel.js"></script>
+<script src="../../../js/jquery.ion.rangeSlider.js"></script>
+<script src="../../../js/jquery.isotope.pkgd.js"></script>
+<script src="../../../js/main.js"></script>
+
+</body>
+</html>

@@ -40,10 +40,11 @@ public class ShoppingCart {
             orderItem.setItemPrice(product.getPrice());
             orderItem.setQuantity(0L);
             orderItem.setId(0L);
-            orderItem.setTotalPrice(0.0);
             items.add(orderItem);
         }
         orderItem.setQuantity(orderItem.getQuantity() + 1);
+        orderItem.setTotalPrice(product.getPrice() * orderItem.getQuantity());
+        recalculate();
     }
 
     public void setQuantity(Product product, Long quantity) {

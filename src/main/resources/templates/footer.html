@@ -1,0 +1,28 @@
+zz<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<footer th:fragment="footer(activeTab)">
+    <div class="container">
+
+        <div class="footer-showroom footer-showroom-single">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h2>Посетите нас</h2>
+                    <p>Адрес</p>
+                    <p>Время работы</p>
+                </div>
+                <div class="col-sm-6">
+                    <!--footer links-->
+                    <div class="footer-links">
+                        <h5>Подпишитесь на наши обновления</h5>
+                        <p><i>Конечно это пока не работает</i></p>
+                        <div class="form-group form-newsletter">
+                            <input class="form-control" type="text" name="email" value="" placeholder="Email" />
+                            <input type="submit" class="btn btn-clean btn-sm" value="Подписаться" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>

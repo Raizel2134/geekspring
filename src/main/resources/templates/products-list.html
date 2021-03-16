@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- Mobile Web-app fullscreen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Meta tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <!--Title-->
+    <title>Товары</title>
+
+    <!--CSS styles-->
+    <link rel="stylesheet" media="all" href="../../css/bootstrap.css"/>
+    <link rel="stylesheet" media="all" href="../../css/animate.css"/>
+    <link rel="stylesheet" media="all" href="../../css/font-awesome.css"/>
+    <link rel="stylesheet" media="all" href="../../css/furniture-icons.css"/>
+    <link rel="stylesheet" media="all" href="../../css/linear-icons.css"/>
+    <link rel="stylesheet" media="all" href="../../css/magnific-popup.css"/>
+    <link rel="stylesheet" media="all" href="../../css/owl.carousel.css"/>
+    <link rel="stylesheet" media="all" href="../../css/ion-range-slider.css"/>
+    <link rel="stylesheet" media="all" href="../../css/theme.css"/>
+
+    <!--Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600&amp;subset=latin-ext" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+<div class="page-loader"></div>
+
+<div class="wrapper">
+
+    <!--Use class "navbar-fixed" or "navbar-default" -->
+    <!--If you use "navbar-fixed" it will be sticky menu on scroll (only for large screens)-->
+
+    <!-- ======================== Navigation ======================== -->
+
+    <div th:replace="~{navigation :: navigation(activeTab)}"/>
+
+    <!-- ======================== Main header ======================== -->
+
+    <section class="main-header" style="background-image:url(../assets/images/gallery-2.jpg)">
+        <header>
+            <div class="container">
+                <h1 class="h2 title">Главная</h1>
+                <ol class="breadcrumb breadcrumb-inverted">
+                    <li><a href="/index"><span class="icon icon-home"></span></a></li>
+                    <li><a href="/product/product-list">Товары</a></li>
+                </ol>
+            </div>
+        </header>
+    </section>
+
+    <!-- ======================== Products ======================== -->
+
+    <section class="products">
+
+        <div class="container">
+
+            <header class="hidden">
+                <h3 class="h3 title">Каталог товаров</h3>
+            </header>
+
+            <div class="row">
+
+                <!-- === product-filters === -->
+                <form th:action="@{/product/product-list}" method="get">
+                    <div class="col-md-3 col-xs-12">
+                        <div class="filters">
+                            <div class="filter-box active">
+                                <div class="title">Наименование</div>
+                                <div class="filter-content">
+                                    <input hidden th:value="${page}" th:name="page">
+                                    <input th:value="${word != null} ? ${word}" th:name="word" type="text"
+                                           placeholder="Название" class="form-control">
+                                </div>
+                            </div>
+                            <!--Price-->
+                            <div class="filter-box active">
+                                <div class="title">Цена</div>
+                                <div class="filter-content">
+                                    <input th:value="${min != null} ? ${min}" th:name="min" type="number"
+                                           placeholder="Минимальная цена" class="form-control"><br>
+                                    <input th:value="${max != null} ? ${max}" th:name="max" type="number"
+                                           placeholder="Максимальная цена" class="form-control">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-block btn-main">Найти</button>
+                        </div> <!--/filters-->
+                        <br>
+                        <a href="/product/product-list" class="btn btn-block btn-main">Сброс</a>
+                    </div>
+                </form>
+                <!-- === product items === -->
+
+                <div class="col-md-9 col-xs-12">
+
+                    <div class="sort-bar clearfix">
+                        <div class="sort-results pull-left">
+                            <!--Showing result per page-->
+                            <!--Items counter-->
+                            <span>Показано <strong th:text="${products.size()}"></strong> из <strong
+                                    th:text="${countProduct}"></strong> товаров</span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!--/*@thymesVar id="products" type="com.geekbrains.geekspring.entities.Product"*/-->
+                        <div class="col-md-12" th:each="product,iterStat : ${products}">
+                            <article>
+                                <div class="figure-list">
+                                    <div class="image">
+                                        <a th:href="@{'/product/' + ${product.id}}" class="mfp-open">
+                                            <img th:if="${product.images.size() > 0}" width="180" height="180"
+                                                 th:src="@{'../../assets/images/' + ${product.images[0].path}}" alt=""/>
+                                            <img th:if="${product.images.size() == 0}" width="180" height="180" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="text">
+                                        <h2 class="title h4"><a th:href="@{'/product/' + ${product.id}}"
+                                                                th:text="${product.title}"></a></h2>
+                                        <sup th:text="${product.price}"></sup>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+
+                    </div><!--/row-->
+                    <!--Pagination-->
+                    <div class="pagination-wrapper">
+                        <ul class="pagination" th:each="i : ${#numbers.sequence(1, totalPage, 1)}">
+                            <li>
+                                <a th:if="${currentPage - 1} >= 0"
+                                   th:href="@{'/product/product-list/?page=' + ${currentPage} + ${filters}}"
+                                   aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a th:class="page-link" th:text="${i}" th:classappend="${page == i ? 'active' : ''}"
+                                   th:href="@{'/product/product-list/?page=' + ${i} + ${filters}}"></a>
+                            </li>
+                            <li>
+                                <a th:if="${currentPage + 1} <= ${totalPage}"
+                                   th:href="@{'/product/product-list/?page=' + ${currentPage + 2} + ${filters}}"
+                                   aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div> <!--/product items-->
+
+            </div><!--/row-->
+        </div><!--/container-->
+    </section>
+
+    <!-- ================== Footer  ================== -->
+
+    <div th:replace="~{footer :: footer(activeTab)}"/>
+
+</div> <!--/wrapper-->
+
+
+<!--JS files-->
+<script src="../../../js/jquery.min.js"></script>
+<script src="../../../js/jquery.bootstrap.js"></script>
+<script src="../../../js/jquery.magnific-popup.js"></script>
+<script src="../../../js/jquery.owl.carousel.js"></script>
+<script src="../../../js/jquery.ion.rangeSlider.js"></script>
+<script src="../../../js/jquery.isotope.pkgd.js"></script>
+<script src="../../../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- Mobile Web-app fullscreen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Meta tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../favicon.ico">
+
+    <!--Title-->
+    <title>Оформление заказа</title>
+
+    <!--CSS styles-->
+    <link rel="stylesheet" media="all" href="../css/bootstrap.css"/>
+    <link rel="stylesheet" media="all" href="../css/animate.css"/>
+    <link rel="stylesheet" media="all" href="../css/font-awesome.css"/>
+    <link rel="stylesheet" media="all" href="../css/furniture-icons.css"/>
+    <link rel="stylesheet" media="all" href="../css/linear-icons.css"/>
+    <link rel="stylesheet" media="all" href="../css/magnific-popup.css"/>
+    <link rel="stylesheet" media="all" href="../css/owl.carousel.css"/>
+    <link rel="stylesheet" media="all" href="../css/ion-range-slider.css"/>
+    <link rel="stylesheet" media="all" href="../css/theme.css"/>
+    <!--Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600&amp;subset=latin-ext" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+<div class="page-loader"></div>
+
+<div class="wrapper">
+
+    <!--Use class "navbar-fixed" or "navbar-default" -->
+    <!--If you use "navbar-fixed" it will be sticky menu on scroll (only for large screens)-->
+
+    <!-- ======================== Navigation ======================== -->
+
+    <div th:replace="~{navigation :: navigation(activeTab)}"/>
+
+    <!-- ========================  Main header ======================== -->
+
+    <section class="main-header" style="background-image:url(assets/images/gallery-2.jpg)">
+        <header>
+            <div class="container text-center">
+                <h2 class="h2 title">Оформление заказа</h2>
+                <ol class="breadcrumb breadcrumb-inverted">
+                    <li><a href="/index"><span class="icon icon-home"></span></a></li>
+                    <li><a>Корзина</a></li>
+                    <li><a class="active">Оформление заказа</a></li>
+                    <li><a>Подтверждение заказа</a></li>
+                </ol>
+            </div>
+        </header>
+    </section>
+
+    <!-- ========================  Step wrapper ======================== -->
+
+    <div class="step-wrapper">
+        <div class="container">
+
+            <div class="stepper">
+                <ul class="row">
+                    <li class="col-md-4 active">
+                        <span data-text="Корзина"></span>
+                    </li>
+                    <li class="col-md-4 active">
+                        <span data-text="Оформление заказа"></span>
+                    </li>
+                    <li class="col-md-4">
+                        <span data-text="Подтверждение заказа"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================  Checkout ======================== -->
+
+    <section class="checkout">
+        <div class="container">
+
+            <header class="hidden">
+                <h3 class="h3 title">Оформление заказа</h3>
+            </header>
+
+            <!-- ========================  Delivery ======================== -->
+            <form th:action="@{/order/confirm}" th:object="${order}" method="post" class="form-horizontal">
+                <div class="cart-wrapper">
+
+                    <div class="note-block">
+                        <div class="row">
+
+                            <!-- === left content === -->
+
+                            <div class="col-md-12">
+
+                                <!-- === login-wrapper === -->
+
+                                <div class="login-wrapper">
+
+                                    <div class="white-block">
+
+                                        <!--signup-->
+
+                                        <!-- ========================  Cart wrapper ======================== -->
+
+                                        <div class="cart-wrapper">
+                                            <!--cart header -->
+                                            <table class="table table-hover">
+                                                <thead class="thead-dark">
+                                                <tr>
+                                                    <th>Название товара</th>
+                                                    <th>Количество</th>
+                                                    <th>Стоимость</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr th:each="orderItem : ${order.orderItems}">
+                                                    <td th:text="${orderItem.product.title}"/>
+                                                    <td th:text="${orderItem.quantity}"/>
+                                                    <td th:text="${orderItem.totalPrice}"/>
+                                                </tr>
+                                                <tr>
+                                                    <td>Итоговая сумма</td>
+                                                    <td/>
+                                                    <td th:text="${order.price}"/>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div class="login-block login-block-signup">
+
+                                            <div class="col-md-12">
+                                                <div>
+                                                    <span>Укажите адрес доставки</span>
+                                                    <select class="form-control" th:field="*{deliveryAddress}"
+                                                            id="dropDeliveryAddresses">
+                                                        <option th:each="o : ${deliveryAddresses}" th:value="${o.id}"
+                                                                th:text="${o.address}"></option>
+                                                    </select>
+                                                    <br>
+                                                    <span>Укажите номер телефона</span>
+                                                    <input type="text" th:field="*{phoneNumber}"
+                                                           class="form-control input-sm">
+                                                    <br>
+                                                </div>
+                                            </div>
+                                        </div> <!--/signup-->
+                                    </div>
+                                </div> <!--/login-wrapper-->
+                            </div> <!--/col-md-6-->
+                            <!-- === right content === -->
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================  Cart navigation ======================== -->
+
+                <div class="clearfix">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <a href="/cart" class="btn btn-clean-dark"><span class="icon icon-chevron-left"></span>Назад
+                                к
+                                корзине</a>
+                        </div>
+                        <div class="col-xs-6 text-right">
+                            <button type="submit" class="btn btn-block btn-main"><span class="icon icon-cart"></span>
+                                Подтверждение заказа
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div> <!--/container-->
+    </section>
+
+
+    <!-- ================== Footer  ================== -->
+
+    <div th:replace="~{footer :: footer(activeTab)}"/>
+</div> <!--/wrapper-->
+
+<!--JS files-->
+<script src="../js/jquery.min.js"></script>
+<script src="../js/jquery.bootstrap.js"></script>
+<script src="../js/jquery.magnific-popup.js"></script>
+<script src="../js/jquery.owl.carousel.js"></script>
+<script src="../js/jquery.ion.rangeSlider.js"></script>
+<script src="../js/jquery.isotope.pkgd.js"></script>
+<script src="../js/main.js"></script>
+</body>
+</html>

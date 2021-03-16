@@ -19,7 +19,6 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-//    @JsonBackReference
     private User user;
 
     @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "order", fetch = FetchType.EAGER)

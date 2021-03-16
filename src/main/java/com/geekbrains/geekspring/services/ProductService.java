@@ -39,6 +39,10 @@ public class ProductService {
         return productRepository.findAll(productSpecification, PageRequest.of(pageNumber, pageSize));
     }
 
+    public int getCountProductsWithFiltering(Specification<Product> productSpecification) {
+        return productRepository.findAll(productSpecification).size();
+    }
+
     public boolean isProductWithTitleExists(String productTitle) {
         return productRepository.findOneByTitle(productTitle) != null;
     }
@@ -50,5 +54,9 @@ public class ProductService {
     @SuppressWarnings("uncheked")
     public Product findById(Long id) {
         return productRepository.findById(id).orElse(null);
+    }
+
+    public void deleteProduct(Long id) {
+        productRepository.delete(findById(id));
     }
 }

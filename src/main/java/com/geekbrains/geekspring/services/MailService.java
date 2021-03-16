@@ -1,53 +1,85 @@
 package com.geekbrains.geekspring.services;
 
 import com.geekbrains.geekspring.entities.Order;
+import com.geekbrains.geekspring.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.io.UnsupportedEncodingException;
 
 @Service
 public class MailService {
-    private JavaMailSender sender;
-    private MailMessageBuilder messageBuilder;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private JavaMailSender javaMailSender;
 
     @Autowired
-    public void setSender(JavaMailSender sender) {
-        this.sender = sender;
+    private void setJavaMailSender(JavaMailSender javaMailSender) {
+        this.javaMailSender = javaMailSender;
     }
 
-    @Autowired
-    public void setMessageBuilder(MailMessageBuilder messageBuilder) {
-        this.messageBuilder = messageBuilder;
+
+
+    public void sendEmailWithAttachment(User user, Order order) throws MessagingException {
+        MimeMessage msg = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
+        helper.setTo(user.getEmail());
+
+        helper.setSubject("Информация о заказе");
+        helper.setText("<h1>Информация о вашем заказе</h1>", true);
+
+        helper.setText(generateMail(user, order), true);
+
+        javaMailSender.send(msg);
     }
 
-    public void sendMail(String email, String subject, String text) {
-        MimeMessage message = sender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+    private String generateMail(User user, Order order) {
+        StringBuilder stringBuilder = new StringBuilder();
+        String stringOutput = "null";
+
+        stringBuilder.append("<strong>Name: ");
+        stringBuilder.append("</strong>");
+        stringBuilder.append(user.getFirstName() + user.getLastName());
+        stringBuilder.append("<br>");
+
+        stringBuilder.append("<strong>Email: ");
+        stringBuilder.append("</strong>");
+        stringBuilder.append(user.getEmail());
+        stringBuilder.append("<br>");
+
+        stringBuilder.append("<strong>Delivery address: ");
+        stringBuilder.append("</strong>");
+        stringBuilder.append(order.getDeliveryAddress().getAddress());
+        stringBuilder.append("<br>");
+
+        stringBuilder.append("<strong>Phone number: ");
+        stringBuilder.append("</strong>");
+        stringBuilder.append(user.getPhone());
+        stringBuilder.append("<br>");
+
+        stringBuilder.append("<strong>Order number: ");
+        stringBuilder.append("</strong>");
+        stringBuilder.append(order.getId());
+        stringBuilder.append("<br>");
+
+        stringBuilder.append("<strong>Date order: ");
+        stringBuilder.append("</strong>");
+        stringBuilder.append(order.getCreateAt());
+        stringBuilder.append("<br>");
+
+        stringBuilder.append("<strong>Date delivery: ");
+        stringBuilder.append("</strong>");
+        stringBuilder.append(order.getDeliveryDate());
+        stringBuilder.append("<br>");
 
         try {
-            helper.setTo(email);
-            helper.setText(text, true);
-            helper.setSubject(subject);
-        } catch (MessagingException e) {
+            stringOutput = new String(stringBuilder.toString().getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
-        try {
-            executorService.submit(() -> sender.send(message));
-        } catch (MailException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void sendOrderMail(Order order) {
-        sendMail(order.getUser().getEmail(), String.format("Заказ %d%n отправлен в обработку", order.getId()), messageBuilder.buildOrderEmail(order));
+        return stringOutput;
     }
 }

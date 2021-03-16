@@ -3,7 +3,6 @@ package com.geekbrains.geekspring.services;
 import com.geekbrains.geekspring.entities.Role;
 import com.geekbrains.geekspring.entities.SystemUser;
 import com.geekbrains.geekspring.entities.User;
-import com.geekbrains.geekspring.repositories.RoleGrpcRepository;
 import com.geekbrains.geekspring.repositories.RoleRepository;
 import com.geekbrains.geekspring.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
-    private RoleRepository roleRepository;
     private BCryptPasswordEncoder passwordEncoder;
-
-    private RoleGrpcRepository roleGrpcRepository;
+    private RoleRepository roleRepository;
+    private DeliveryAddressService deliveryAddressService;
 
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
@@ -38,19 +37,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Autowired
-    public void setRepository(RoleGrpcRepository roleGrpcRepository) {
-        this.roleGrpcRepository = roleGrpcRepository;
+    public void setPasswordEncoder(BCryptPasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Autowired
-    public void setPasswordEncoder(BCryptPasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
+    public void setDeliveryAddressService(DeliveryAddressService deliveryAddressService) {
+        this.deliveryAddressService = deliveryAddressService;
     }
 
     @Override
     @Transactional
     public User findByUserName(String username) {
         return userRepository.findOneByUserName(username);
+    }
+
+    @Override
+    @Transactional
+    public SystemUser findBySystemUserName(String username) {
+        User tempUser = userRepository.findOneByUserName(username);
+        SystemUser systemUser = new SystemUser();
+        systemUser.setUserName(tempUser.getUserName());
+        systemUser.setFirstName(tempUser.getFirstName());
+        systemUser.setLastName(tempUser.getLastName());
+        systemUser.setEmail(tempUser.getEmail());
+        systemUser.setPassword(passwordEncoder.encode(tempUser.getPassword()));
+        systemUser.setPhone(tempUser.getPhone());
+        return systemUser;
     }
 
     @Override
@@ -67,10 +80,44 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(systemUser.getFirstName());
         user.setLastName(systemUser.getLastName());
         user.setEmail(systemUser.getEmail());
-        user.setRoles(Arrays.asList(roleGrpcRepository.findOneByName("ROLE_EMPLOYEE")));
+        user.setPhone(systemUser.getPhone());
+        user.setRoles(Arrays.asList(roleRepository.findOneByName("ROLE_EMPLOYEE")));
 
         userRepository.save(user);
         return true;
+    }
+
+    @Override
+    @Transactional
+    public boolean saveChangeUser(SystemUser systemUser) {
+        User user = userRepository.findOneByUserName(systemUser.getUserName());
+
+        System.out.println(systemUser);
+
+        user.setUserName(systemUser.getUserName());
+        user.setFirstName(systemUser.getFirstName());
+        user.setLastName(systemUser.getLastName());
+        user.setEmail(systemUser.getEmail());
+        user.setPhone(systemUser.getPhone());
+        user.setPassword(passwordEncoder.encode(systemUser.getPassword()));
+        deliveryAddressService.setUserAddresses(user, systemUser.getAddress());
+
+        userRepository.save(user);
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public List<User> findAll(){ return (List<User>) userRepository.findAll();}
+
+    @Override
+    public void deleteById(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    @Override
+    public User getById(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     @Override

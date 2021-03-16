@@ -1,28 +1,117 @@
-<!DOCTYPE html>
-
+﻿<!DOCTYPE html>
+<html lang="en">
 <html xmlns:th="http://www.thymeleaf.org">
-<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-    <title>GeekWinterMarket</title>
+    <!-- Mobile Web-app fullscreen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 
-    <link rel="icon" type="image/png" th:href="@{/favicon.ico}"/>
+    <!-- Meta tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../favicon.ico">
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <!--Title-->
+    <title>Интернет магазин</title>
+
+    <!--CSS styles-->
+    <link rel="stylesheet" media="all" href="../css/bootstrap.css"/>
+    <link rel="stylesheet" media="all" href="../css/animate.css"/>
+    <link rel="stylesheet" media="all" href="../css/font-awesome.css"/>
+    <link rel="stylesheet" media="all" href="../css/furniture-icons.css"/>
+    <link rel="stylesheet" media="all" href="../css/linear-icons.css"/>
+    <link rel="stylesheet" media="all" href="../css/magnific-popup.css"/>
+    <link rel="stylesheet" media="all" href="../css/owl.carousel.css"/>
+    <link rel="stylesheet" media="all" href="../css/ion-range-slider.css"/>
+    <link rel="stylesheet" media="all" href="../css/theme.css"/>
+
+    <!--Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600&amp;subset=latin-ext" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
 </head>
 
 <body>
 
-<div th:replace="~{navigation :: navi(Home)}" />
+<div class="page-loader"></div>
 
-<div class="container">
-    <br>
-    <h1>GeekWinterMarket</h1>
-    <!--<img src="images/1.bmp">-->
-    Добро пожаловать в наш интернет-магазин, работающий для Вас с 2018 года!
-</div>
+<div class="wrapper">
+
+    <!-- ======================== Navigation ======================== -->
+
+    <div th:replace="~{navigation :: navigation(activeTab)}"/>
+
+    <!-- ========================  Header content ======================== -->
+
+    <section id="page-home" class="header-content">
+
+        <div class="owl-slider owl-slider-fullscreen">
+
+            <!-- === slide item === -->
+
+            <div class="item" style="background-image:url(assets/images/gallery-2.jpg)">
+                <div class="box">
+                    <div class="container text-center">
+                        <h2 class="title animated h1" data-animation="fadeInDown">Шаблон сайта</h2>
+                        <div class="animated" data-animation="fadeInUp">
+                            Шаблон<br/>Сайта
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === slide item === -->
+
+        </div> <!--/owl-slider-->
+    </section>
+
+
+    <!-- ========================  Products widget ======================== -->
+
+    <section id="page-products" class="products">
+
+        <div class="container">
+
+            <!-- === header title === -->
+
+            <header>
+                <div class="row">
+                    <div class="col-md-offset-2 col-md-8 text-center">
+                        <h2 class="title">Здесь могла бы быть Ваша реклама</h2>
+                        <div class="text">
+                            <p>Но ее пока нет</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+        </div> <!--/container-->
+    </section>
+
+    <!-- ================== Footer  ================== -->
+
+    <div th:replace="~{footer :: footer(activeTab)}"/>
+
+</div> <!--/wrapper-->
+<!--JS files-->
+<script src="../js/jquery.min.js"></script>
+<script src="../js/jquery.bootstrap.js"></script>
+<script src="../js/jquery.magnific-popup.js"></script>
+<script src="../js/jquery.owl.carousel.js"></script>
+<script src="../js/jquery.ion.rangeSlider.js"></script>
+<script src="../js/jquery.isotope.pkgd.js"></script>
+<script src="../js/main.js"></script>
+
 </body>
+
 </html>

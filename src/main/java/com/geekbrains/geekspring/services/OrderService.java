@@ -36,6 +36,7 @@ public class OrderService {
         order.setStatus(orderStatusService.getStatusById(1L));
         order.setPrice(cart.getTotalCost());
         order.setOrderItems(new ArrayList<>(cart.getItems()));
+        order.setPhoneNumber(user.getPhone());
         for (OrderItem o : cart.getItems()) {
             o.setOrder(order);
         }

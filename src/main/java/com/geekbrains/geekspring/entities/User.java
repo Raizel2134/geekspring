@@ -12,7 +12,7 @@ import java.util.Map;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
@@ -37,43 +37,43 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Collection<Role> roles;
 
-
-    public static final Map<String, String> COLUMN_MAPPINGS = new HashMap<>();
-
-    static {
-        COLUMN_MAPPINGS.put("id", "id");
-        COLUMN_MAPPINGS.put("username", "userName");
-        COLUMN_MAPPINGS.put("password", "password");
-        COLUMN_MAPPINGS.put("first_name", "firstName");
-        COLUMN_MAPPINGS.put("last_name", "lastName");
-        COLUMN_MAPPINGS.put("email", "email");
-    }
+    @Column(name = "phone")
+    private String phone;
 
     public User() {
     }
 
-    public User(String userName, String password, String firstName, String lastName, String email) {
+    public User(String userName, String password, String firstName, String lastName, String email, String phone) {
         this.userName = userName;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.phone = phone;
     }
 
-    public User(String userName, String password, String firstName, String lastName, String email,
+    public User(String userName, String password, String firstName, String lastName, String email, String phone,
                 Collection<Role> roles) {
         this.userName = userName;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.phone = phone;
         this.roles = roles;
     }
 
     @Override
     public String toString() {
-        return "User{" + "id=" + id + ", userName='" + userName + '\'' + ", password='" + "*********" + '\''
-                + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", email='" + email + '\''
-                + ", roles=" + roles + '}';
+        return "User{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", roles=" + roles +
+                ", phone='" + phone + '\'' +
+                '}';
     }
 }
